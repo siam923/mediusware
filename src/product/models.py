@@ -14,6 +14,9 @@ class Product(TimeStampMixin):
     sku = models.SlugField(max_length=255, unique=True)
     description = models.TextField()
 
+    def count_prod(self):
+        return self.objects.all.count()
+
 
 class ProductImage(TimeStampMixin):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -35,4 +38,5 @@ class ProductVariantPrice(TimeStampMixin):
                                               related_name='product_variant_three')
     price = models.FloatField()
     stock = models.FloatField()
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='variant', on_delete=models.CASCADE)
+

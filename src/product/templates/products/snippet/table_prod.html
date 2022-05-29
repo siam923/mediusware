@@ -1,0 +1,30 @@
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{instance.title}} <br> Created at : {{instance.created_at}}</td>
+    <td>{{instance.description}}</td>
+    <td>
+        <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+            {%for p in instance.variant.all %}
+            <dt class="col-sm-3 pb-0">
+                {{p.product_variant_one.variant_title}}/{{p.product_variant_two.variant_title}}/{{p.product_variant_three.variant_title}}
+            </dt>
+            <dd class="col-sm-9">
+                <dl class="row mb-0">
+                    
+                    <dd class="col-sm-4 pb-0">Price :  {{p.price}} </dd>
+                    <dd class="col-sm-8 pb-0">InStock : {{p.stock}}</dd>
+                    
+                </dl>
+            </dd>
+            {%endfor%}
+            
+        </dl>
+        <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
+        </button>
+    </td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a href="" class="btn btn-success">Edit</a>
+        </div>
+    </td>
+</tr>
