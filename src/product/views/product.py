@@ -1,19 +1,22 @@
 from django.views import generic
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from product.models import Product, Variant, ProductVariantPrice, ProductVariant
 from .filters import ProductFilter
 from django.db.models import Q
 
 
-class CreateProductView(generic.TemplateView):
+class CreateProductView(generic.CreateView):
     template_name = 'products/create.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(CreateProductView, self).get_context_data(**kwargs)
-        variants = Variant.objects.filter(active=True).values('id', 'title')
-        context['product'] = True
-        context['variants'] = list(variants.all())
-        return context
+    model = Product 
+    fields = '__all__'
+    # def get_context_data(self, **kwargs):
+    #     context = super(CreateProductView, self).get_context_data(**kwargs)
+    #     variants = Variant.objects.filter(active=True).values('id', 'title')
+    #     context['product'] = True
+    #     context['variants'] = list(variants.all())
+    #     return context
+    def get_absolute_url(self): # new
+        return reverse('/')
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
@@ -47,8 +50,6 @@ class ProductListView(generic.ListView):
             qs = qs.filter(product_variant__variant_title__contains=variant)
                
         return qs
-
-   
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

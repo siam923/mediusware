@@ -1,11 +1,12 @@
 {% extends 'backend/base.html' %}
-
+{% load static %}
 {% block title %} Create Product {% endblock %}
 
 {% block content %}
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Create Product</h1>
         <a href="{% url 'product:create.product' %}" class="float-right btn btn-primary">All Product</a>
+
     </div>
 
 
@@ -15,7 +16,25 @@
     </script>
 
     <div id="root">
-        <CreateProduct id="variants" data-variants="{{ variants|safe }}"></CreateProduct>
+        <CreateProduct id="variants" data-variants="{{ variants|safe }}">
+            <form action ="" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="save">
+            </form>
+
+        </CreateProduct>
     </div>
+
+{% endblock %}
+
+
+
+{% block script %}
+
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+<script type="text/javascript" src="{% static '/js/components/CreateProduct.js' %}"></script>
 
 {% endblock %}
