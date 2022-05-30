@@ -1,7 +1,8 @@
 from django.views import generic
 from django.shortcuts import render
-from product.models import Product, Variant, ProductVariantPrice
+from product.models import Product, Variant, ProductVariantPrice, ProductVariant
 from .filters import ProductFilter
+from django.db.models import Q
 
 
 class CreateProductView(generic.TemplateView):
@@ -14,31 +15,47 @@ class CreateProductView(generic.TemplateView):
         context['variants'] = list(variants.all())
         return context
 
+def is_valid_queryparam(param):
+    return param != '' and param is not None
 
 class ProductListView(generic.ListView):
-    model = Product 
     context_object_name = 'product_list'
     template_name = 'products/list.html'
     paginate_by = 10
+
+    def get_queryset(self):
+        qs = Product.objects.all()
+        title = self.request.GET.get('title')
+        price_from = self.request.GET.get('price_from')
+        price_to = self.request.GET.get('price_to')
+        date = self.request.GET.get('date')
+        variant = self.request.GET.get('variant')
+        # print(title)
+        if is_valid_queryparam(title):
+            qs = qs.filter(title__icontains=title)
+        
+        if is_valid_queryparam(price_from) :
+            qs = qs.filter(variant__price__gte=price_from)
+        
+        if is_valid_queryparam(price_to) :
+            qs = qs.filter(variant__price__lte=price_to)
+        
+        if is_valid_queryparam(date):
+            qs = qs.filter(created_at__contains=date)
+        
+        if is_valid_queryparam(variant):
+            qs = qs.filter(product_variant__variant_title__contains=variant)
+               
+        return qs
+
+   
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         count_prod = Product.objects.all().count()
         context['prod_count'] = count_prod
-        context['filter'] = ProductFilter(self.request.GET, queryset=self.get_queryset())
+        context['variants'] = ProductVariant.objects.all()
         return context
 
 
 
-def filterview(request):
-    qs = Product.objects.all()
-    count_prod = qs.count()
-    title = request.GET.get('title')
-    price_from = request.GET.get('price_form')
-    price_to = request.GET.get('price_to')
-    print(title)
-    context = {
-        'product_list': qs,
-        'prod_count': count_prod
-    }
-    return render(request, "products/list.html", {})
